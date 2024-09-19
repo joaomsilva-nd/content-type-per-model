@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddControllers();
 builder.Services.AddOptions<MvcOptions>().PostConfigure<IOptions<JsonOptions>>((opt, jOptions) =>
 {
     var inputFormat = opt.InputFormatters.OfType<SystemTextJsonInputFormatter>().First();
@@ -22,24 +23,7 @@ builder.Services.AddOptions<MvcOptions>().PostConfigure<IOptions<JsonOptions>>((
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(opt => opt.ResolveConflictingActions(MergeConflicts));
-
-ApiDescription MergeConflicts(IEnumerable<ApiDescription> enumerable)
-{
-    var enumerator = enumerable.GetEnumerator();
-    if(!enumerator.MoveNext())
-    {
-        return null;
-    }
-
-    var first = enumerator.Current;
-    while (enumerator.MoveNext())
-    {
-        var next = enumerator.Current;
-    }
-
-    return first;
-}
+builder.Services.AddSwaggerGen(opt => opt.ResolveConflictingActions(api => api.First()));
 
 var app = builder.Build();
 
